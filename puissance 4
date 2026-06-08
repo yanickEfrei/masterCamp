@@ -1,0 +1,35 @@
+ROWS, COLS, WIN = 6, 12, 4
+
+def actions(board):
+    return [c for c in range(COLS) if board[0][c] == 0]
+
+def result(board, col, joueur):
+    b = [row[:] for row in board]
+    for r in range(ROWS - 1, -1, -1):
+        if b[r][col] == 0:
+            b[r][col] = joueur
+            break
+    return b
+
+def check_win(board, joueur):
+    for r in range(ROWS):
+        for c in range(COLS - WIN + 1):
+            if all(board[r][c+k] == joueur for k in range(WIN)):
+                return True
+    for r in range(ROWS - WIN + 1):
+        for c in range(COLS):
+            if all(board[r+k][c] == joueur for k in range(WIN)):
+                return True
+    for r in range(ROWS - WIN + 1):
+        for c in range(COLS - WIN + 1):
+            if all(board[r+k][c+k] == joueur for k in range(WIN)):
+                return True
+    for r in range(WIN - 1, ROWS):
+        for c in range(COLS - WIN + 1):
+            if all(board[r-k][c+k] == joueur for k in range(WIN)):
+                return True
+    return False
+
+def Terminal_Test(board):
+    pieces = sum(board[r][c] != 0 for r in range(ROWS) for c in range(COLS))
+    return check_win(board, 1) or check_win(board, -1) or pieces >= 42 or not actions(board)
