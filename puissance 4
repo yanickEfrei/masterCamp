@@ -72,3 +72,36 @@ def IA_Decision(board):
         if score > best_score:
             best_score, best_col = score, col
     return best_col
+
+def afficher(board):
+    sym = {1: 'X', -1: 'O', 0: ' '}
+    print()
+    for r in range(ROWS):
+        print('|' + '|'.join(sym[board[r][c]] for c in range(COLS)) + '|')
+    print('-' * (COLS * 2 + 1))
+    print('|' + '|'.join(str(c % 10) for c in range(COLS)) + '|')
+    print()
+
+def jouer():
+    board = [[0]*COLS for _ in range(ROWS)]
+    choix = input("Qui commence ? (ia/vous) : ").strip().lower()
+    ia, hum = 1, -1
+    tour = 1 if choix == 'ia' else -1
+
+    while not Terminal_Test(board):
+        afficher(board)
+        if tour == ia:
+            col = IA_Decision(board)
+            print(f"L'IA joue colonne {col}")
+        else:
+            col = int(input(f"Votre colonne (0-11) : "))
+        board = result(board, col, tour)
+        tour = -tour
+
+    afficher(board)
+    if check_win(board, ia):  print("L'IA gagne !")
+    elif check_win(board, hum): print("Vous gagnez !")
+    else: print("Match nul !")
+
+if name == 'main':
+    jouer()
