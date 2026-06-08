@@ -32,4 +32,43 @@ def check_win(board, joueur):
 
 def Terminal_Test(board):
     pieces = sum(board[r][c] != 0 for r in range(ROWS) for c in range(COLS))
-    return check_win(board, 1) or check_win(board, -1) or pieces >= 42 or not actions(board)
+    return check_win(board, 1) or check_win(board, -1) or pieces >= 42 or not actions(board)²
+
+def heuristique(board):
+    score = 0
+    for r in range(ROWS):
+        for c in range(COLS - 3):
+            w = [board[r][c+k] for k in range(4)]
+            if -1 not in w: score += w.count(1) * 2
+            if 1 not in w:  score -= w.count(-1) * 2
+    return score
+
+def max_val(board, alpha, beta, depth):
+    if check_win(board, 1):  return 100000
+    if check_win(board, -1): return -100000
+    if depth == 0 or not actions(board): return heuristique(board)
+    v = float('-inf')
+    for col in actions(board):
+        v = max(v, min_val(result(board, col, 1), alpha, beta, depth - 1))
+        if v >= beta: return v
+        alpha = max(alpha, v)
+    return v
+
+def min_val(board, alpha, beta, depth):
+    if check_win(board, 1):  return 100000
+    if check_win(board, -1): return -100000
+    if depth == 0 or not actions(board): return heuristique(board)
+    v = float('inf')
+    for col in actions(board):
+        v = min(v, max_val(result(board, col, -1), alpha, beta, depth - 1))
+        if v <= alpha: return v
+        beta = min(beta, v)
+    return v
+
+def IA_Decision(board):
+    best_col, best_score = actions(board)[0], float('-inf')
+    for col in actions(board):
+        score = min_val(result(board, col, 1), float('-inf'), float('inf'), 4)
+        if score > best_score:
+            best_score, best_col = score, col
+    return best_col
